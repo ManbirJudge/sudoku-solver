@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="faq_questions">
+        <item>How do I allow the app to use camera?</item>
+        <item>How do I scan a Sudoku puzzle from a photo?</item>
+        <item>How do I enter the numbers manually?</item>
+        <item>Does the app work offline?</item>
+        <item>Are there any in-app purchases or ads?</item>
+    </string-array>
+    <string-array name="faq_answers">
+        <item>Go to the main screen and click on "Camera" in the bottom navigation bar.</item>
+        <item>That feature isn\'t available yet.</item>
+        <item>Go to the main screen and click on "Manual" in the bottom navigation bar.</item>
+        <item>Very obviously, it does work offline.</item>
+        <item>Not yet, but we are planning to show ads in the future.</item>
+    </string-array>
+    <string-array name="pref_theme_entries">
+        <item>System Theme</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="pref_theme_values">
+        <item>sys</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+</resources>

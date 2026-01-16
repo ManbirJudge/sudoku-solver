@@ -1,0 +1,53 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/about_app_icon"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:contentDescription="@string/app_name"
+            android:src="@mipmap/ic_launcher_round" />
+        <TextView
+            android:layout_marginTop="16dp"
+            android:text="@string/app_name"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"/>
+        <TextView
+            android:id="@+id/about_app_version"
+            android:layout_marginTop="4dp"
+            android:text="v0.0.1"
+            android:textSize="14sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginTop="16dp"
+            android:text="Made with ❤️ by Manbir Judge"
+            android:textSize="14sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/about_open_source_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open Source Licenses"
+            app:icon="@drawable/ic_contract_24"
+            android:layout_marginTop="16dp"
+            app:iconGravity="textStart" />
+        <Button
+            android:id="@+id/about_dev_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="About Developer"/>
+    </LinearLayout>
+</ScrollView>

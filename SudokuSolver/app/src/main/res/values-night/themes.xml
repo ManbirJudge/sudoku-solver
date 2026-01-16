@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.SudokuSolver" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/gray_800</item>
+        <item name="colorPrimaryVariant">@color/gray_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_400</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <item name="colorSurface">@color/gray_900</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="android:windowBackground">@color/gray_900</item>
+
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/gray_800</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <item name="sudokuBg">@color/black</item>
+    </style>
+
+    <style name="MyAlertDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/teal_200</item>
+    </style>
+</resources>

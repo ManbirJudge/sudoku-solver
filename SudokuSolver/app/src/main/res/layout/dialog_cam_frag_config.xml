@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="20dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="FPS"/>
+    <Spinner
+        android:id="@+id/cam_frag_config_fps_spin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Solution Algorithm"/>
+    <Spinner
+        android:id="@+id/cam_frag_config_alg_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Calibration Profile"/>
+    <Spinner
+        android:id="@+id/cam_frag_config_calib_profile_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+    <CheckBox
+        android:id="@+id/cam_frag_config_metrics_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stats for nerds"/>
+</LinearLayout>

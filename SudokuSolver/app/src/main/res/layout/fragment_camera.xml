@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+    <LinearLayout
+        android:id="@+id/cam_frag_permission_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="14dp"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="Using camera solver features requires camera permission."/>
+        <Button
+            android:id="@+id/cam_frag_ask_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ask"
+            android:layout_marginVertical="4dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="If permission is denied without showing a dialog, change it from the settings."/>
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cam_frag_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/cam_frag_preview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="?attr/sudokuBg"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+            <Button
+                android:id="@+id/cam_frag_solve_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="Solve" />
+
+            <Button
+                android:id="@+id/cam_frag_another_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:drawableRight="@drawable/ic_refresh_24"
+                android:drawableTint="?attr/colorOnPrimary"
+                android:text="Solve More"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/cam_frag_transfer_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:drawableRight="@drawable/ic_arrow_forward_24"
+                android:drawableTint="?attr/colorOnPrimary"
+                android:text="Manual"
+                android:visibility="gone" />
+            
+            <ImageButton
+                android:id="@+id/cam_frag_config_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_small_tune_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Configuration button"
+                app:tint="?attr/colorAccent" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/cam_frag_metrics_txt_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="#66000000"
+            android:textColor="@color/white"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="4dp"
+            android:text="Metrics here ..."
+            android:visibility="gone"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/cam_frag_circular_prog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"/>
+</LinearLayout>

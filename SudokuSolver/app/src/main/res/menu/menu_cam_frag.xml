@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title="Options"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_more_vert_24"
+        android:iconTint="?attr/colorOnPrimary"
+        app:iconTint="?attr/colorOnPrimary">
+        <menu>
+            <item
+                android:id="@+id/nav_calibrate"
+                android:icon="@drawable/ic_instant_mix_24"
+                android:title="Calibrate"
+                android:iconTint="?attr/colorOnSurface"
+                app:iconTint="?attr/colorOnSurface"/>
+            <item
+                android:id="@+id/nav_how"
+                android:icon="@drawable/ic_help_24"
+                android:title="How to use?"
+                android:iconTint="?attr/colorOnSurface"
+                app:iconTint="?attr/colorOnSurface"/>
+        </menu>
+    </item>
+</menu>
