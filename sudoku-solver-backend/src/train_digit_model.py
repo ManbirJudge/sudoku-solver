@@ -1,3 +1,5 @@
+from random import randint
+
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
@@ -13,10 +15,11 @@ data_aug = tf.keras.Sequential([
     # layers.RandomTranslation(0.1, 0.05),
     # layers.RandomZoom(0.05),
     # layers.RandomContrast(0.05),
-    layers.Rescaling(1./255),
+    layers.Rescaling(1. / 255.),
     tf.keras.layers.Lambda(lambda x: tf.where(x > 0.5, 1.0, 0.0))
 ])
 
+SEED = randint(0, 100000)
 train_ds = tf.keras.utils.image_dataset_from_directory(
     DATA_DIR,
     image_size=(IMG_SIZE, IMG_SIZE),
@@ -24,11 +27,8 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     batch_size=BATCH_SIZE,
     validation_split=0.2,
     subset='training',
-    seed=123
+    seed=SEED
 )
-
-print(train_ds.class_names)
-
 test_ds = tf.keras.utils.image_dataset_from_directory(
     DATA_DIR,
     image_size=(IMG_SIZE, IMG_SIZE),
@@ -36,7 +36,7 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
     batch_size=BATCH_SIZE,
     validation_split=0.2,
     subset='validation',
-    seed=123
+    seed=SEED
 )
 
 train_ds = train_ds.map(lambda x, y: (data_aug(x), y))
@@ -61,7 +61,7 @@ model.compile(
 )
 
 # training
-model.fit(train_ds, epochs=EPOCHS, validation_data=test_ds)
+model.fit(train_ds, epochs=EPOCHS, validation_data=test_ds, shuffle=False)
 
 # storing
 model.save('./data/digit-model.keras')

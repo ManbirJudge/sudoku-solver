@@ -4,7 +4,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import cv2
 import numpy as np
-import pyautogui
+from mss import MSS
 from tensorflow.keras.models import load_model
 
 from solver import solve, print_paper
@@ -80,10 +80,14 @@ def is_empty(img, border_size=2, white_threshold=250, fill_ratio=0.3):
     return (non_white / total_pixels) < fill_ratio
 
 # --- model
-digit_model = load_model('data/digit-model.h5')
+digit_model = load_model('data/digit-model.keras')
 
 # --- image
-img = np.array(pyautogui.screenshot())
+with MSS() as sct:
+    monitor = sct.monitors[1]
+    ss = sct.grab(monitor)
+    
+    img = np.array(ss)
 
 H, W = img.shape[:2]
 
@@ -116,82 +120,83 @@ if biggest_quad is not None:
     paper_img = cv2.adaptiveThreshold(paper_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 9, 2)
 
 # --- getting values
-# # splitintg into cells
-# if biggest_quad is not None:
-#     rows = np.vsplit(paper_img, 9)
-#     cells = []
+# splitintg into cells
+if biggest_quad is not None:
+    rows = np.vsplit(paper_img, 9)
+    cells = []
 
-#     for r_idx, row in enumerate(rows):
-#         cols = np.hsplit(row, 9)
-        
-#         for c_idx, cell in enumerate(cols):
-#             cell = np.asarray(cell)
+    for r_idx, row in enumerate(rows):
+        cols = np.hsplit(row, 9)
+      
+        for c_idx, cell in enumerate(cols):
+            cell = np.asarray(cell)
 
-#             top_trim    = BORDER_W
-#             bottom_trim = BORDER_W
-#             left_trim   = BORDER_W
-#             right_trim  = BORDER_W
+            top_trim    = BORDER_W
+            bottom_trim = BORDER_W
+            left_trim   = BORDER_W
+            right_trim  = BORDER_W
 
-#             EXTRA_W = BORDER_W
+            EXTRA_W = BORDER_W
 
-#             if r_idx == 0: top_trim += EXTRA_W
-#             if r_idx == 8: bottom_trim += EXTRA_W
-#             if c_idx == 0: left_trim += EXTRA_W
-#             if c_idx == 8: right_trim += EXTRA_W
+            if r_idx == 0: top_trim += EXTRA_W
+            if r_idx == 8: bottom_trim += EXTRA_W
+            if c_idx == 0: left_trim += EXTRA_W
+            if c_idx == 8: right_trim += EXTRA_W
 
-#             cell = cell[top_trim:cell.shape[0]-bottom_trim, left_trim:cell.shape[1]-right_trim]
-#             cell = cv2.resize(cell, (CELL_IMG_S, CELL_IMG_S))
-#             cell = cell / 255.0
-#             cell = np.expand_dims(cell, axis=-1)
-        
-#             cells.append(cell)
+            cell = cell[top_trim:cell.shape[0]-bottom_trim, left_trim:cell.shape[1]-right_trim]
+            cell = cv2.resize(cell, (CELL_IMG_S, CELL_IMG_S))
+            cell = cell / 255.0
+            cell = np.expand_dims(cell, axis=-1)
+      
+            cells.append(cell)
 
-# # empty cells
+# empty cells
 
-# # prediction
-# paper_vals = []
+# prediction
+paper_vals = []
 
-# if biggest_quad is not None:
-#     cv2.imshow('Cell', np.reshape(cells[0], (CELL_IMG_S, CELL_IMG_S)))
+if biggest_quad is not None:
+    cv2.imshow('Cell', np.reshape(cells[0], (CELL_IMG_S, CELL_IMG_S)))
 
-#     predictions = digit_model.predict(np.array(cells), verbose=0)
-    
-#     for i, pred in enumerate(predictions):
-#         n = np.argmax(pred)
+    predictions = digit_model.predict(np.array(cells), verbose=0)
+  
+    for i, pred in enumerate(predictions):
+        n = np.argmax(pred)
 
-#         if is_empty(cells[i]):
-#             paper_vals.append(0)
-#         else:
-#             if pred[n] > 0.5:
-#                 paper_vals.append(n)
-#             else:
-#                 paper_vals.append(0)
+        if is_empty(cells[i]):
+            paper_vals.append(0)
+        else:
+            if pred[n] > 0.5:
+                paper_vals.append(n)
+            else:
+                paper_vals.append(0)
 
 # --- solution
-# solution = paper_vals.copy()
-# if biggest_quad is not None:
-#     solve(solution)
+if biggest_quad is not None:
+    solution = paper_vals.copy()
+    solve(solution)
 
-# print_paper(paper_vals)
-# print('----------')
-# print_paper(solution)
+if biggest_quad is not None:
+    print_paper(paper_vals)
+    print('----------')
+    print_paper(solution)
 
 # --- drawing
-paper_img = cv2.cvtColor(paper_img, cv2.COLOR_GRAY2BGR)
+# paper_img = cv2.cvtColor(paper_img, cv2.COLOR_GRAY2BGR)
 
 cv2.drawContours(img, contours, -1, Color.GREEN, 1, cv2.LINE_AA)
 if biggest_quad is not None:
     cv2.drawContours(img, biggest_quad, -1, Color.RED, 8, cv2.LINE_AA)
 
-# if biggest_quad is not None:
-#     for i in range(9):
-#         for j in range(9):
-#             val = paper_vals[i * 9 + j]
+if biggest_quad is not None:
+    for i in range(9):
+        for j in range(9):
+            val = paper_vals[i * 9 + j]
 
-#             if val == 0:
-#                 cv2.putText(paper_img, str(solution[i * 9 + j]), (120 * j, 120 * (i + 1)), cv2.FONT_HERSHEY_PLAIN, 2, Color.GREEN, 2, cv2.LINE_AA)
-#             else:
-#                 cv2.putText(paper_img, str(val), (120 * j, 120 * (i + 1)), cv2.FONT_HERSHEY_PLAIN, 2, Color.BLUE, 2, cv2.LINE_AA)
+            if val == 0:
+                cv2.putText(paper_img, str(solution[i * 9 + j]), (120 * j, 120 * (i + 1)), cv2.FONT_HERSHEY_PLAIN, 2, Color.GREEN, 2, cv2.LINE_AA)
+            else:
+                cv2.putText(paper_img, str(val), (120 * j, 120 * (i + 1)), cv2.FONT_HERSHEY_PLAIN, 2, Color.BLUE, 2, cv2.LINE_AA)
 
 # --- showing
 # cv2.imshow('Image', img)
