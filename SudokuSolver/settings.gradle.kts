@@ -19,4 +19,4 @@ rootProject.name = "Sudoku Solver"
 include(":app")
 include(":opencv")
 
-project(":opencv").projectDir = File(rootDir, "app/src/main/cpp/opencv/sdk/")
+project(":opencv").projectDir = rootDir.resolve("third_party/opencv/sdk")

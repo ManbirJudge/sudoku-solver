@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.example.sudokusolver.databinding.FragmentAboutBinding
-import com.mikepenz.aboutlibraries.LibsBuilder
+// import com.mikepenz.aboutlibraries.LibsBuilder
 
 class AboutFragment : Fragment() {
     private lateinit var binding: FragmentAboutBinding
@@ -19,12 +19,12 @@ class AboutFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.aboutOpenSourceBtn.setOnClickListener {
-            LibsBuilder()
-                .withShowLoadingProgress(true)
-                .withSearchEnabled(true)
-                .start(requireContext())
-        }
+        // binding.aboutOpenSourceBtn.setOnClickListener {
+        //     LibsBuilder()
+        //         .withShowLoadingProgress(true)
+        //         .withSearchEnabled(true)
+        //         .start(requireContext())
+        // }
 
         binding.aboutDevBtn.setOnClickListener {
             startActivity(Intent(

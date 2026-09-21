@@ -1,26 +1,13 @@
-# Generate by Android Studio
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
 local.properties
 
-# Added by me
-.vscode/
 .idea/
+
+*.iml
+.cxx/
+.gradle/
 .kotlin/
+build/
 release/
 
-app/src/main/cpp/include/tensorflow/lite/*
-app/src/main/cpp/opencv/*
-app/src/main/jniLibs/litert/*
+# app/src/main/cpp/include/tensorflow/lite/*
+# app/src/main/jniLibs/litert/*

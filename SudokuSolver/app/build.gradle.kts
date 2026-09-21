@@ -1,22 +1,24 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    id("com.mikepenz.aboutlibraries.plugin")
+    // alias(libs.plugins.kotlin.android)
+    // id("com.mikepenz.aboutlibraries.plugin")
 }
 
 android {
     namespace = "com.example.sudokusolver"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.sudokusolver"
+
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
+
         versionCode = 1
         versionName = "0.1"
 
         ndk {
-            abiFilters += "arm64-v8a"
+            abiFilters += "arm64-v8a" // maybe support other architectures in the future?
         }
 
         externalNativeBuild {
@@ -42,9 +44,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    // kotlin {
+    //     compilerOptions {
+    //         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    //     }
+    // }
 
     externalNativeBuild {
         cmake {
@@ -56,13 +60,14 @@ android {
     buildFeatures {
         viewBinding = true
         prefab = true
+        resValues = true
     }
 }
 
 dependencies {
     implementation(project(":opencv"))
 
-    implementation(libs.aboutlibraries)
+    // implementation(libs.aboutlibraries)
 
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
@@ -79,7 +84,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
 
     implementation(libs.material)
-    implementation(libs.androidx.preference)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit.v130)
