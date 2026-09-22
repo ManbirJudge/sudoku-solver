@@ -1,3 +1,5 @@
+third_party/opencv/*
+
 local.properties
 
 .idea/
@@ -8,6 +10,3 @@ local.properties
 .kotlin/
 build/
 release/
-
-# app/src/main/cpp/include/tensorflow/lite/*
-# app/src/main/jniLibs/litert/*
