@@ -1,4 +1,4 @@
-third_party/opencv/*
+third_party/opencv/**/*
 
 local.properties
 

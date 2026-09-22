@@ -1,6 +1,6 @@
 # Sudoku Solver (Android)
 ## Build
-- Download OpenCV Android Release 5.0.0 and extract it to `third_party/opencv`
+- Download OpenCV 5.0.0 Android SDK and extract it to `third_party/opencv`
   - [OpenCV Release Page](https://opencv.org/releases/)
   - [Direct Download](https://github.com/opencv/opencv/releases/download/5.0.0/opencv-5.0.0-android-sdk.zip)
 ## TODOs
