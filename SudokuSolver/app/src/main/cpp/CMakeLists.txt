@@ -22,7 +22,11 @@ set_target_properties(litert PROPERTIES
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
     native-lib.cpp
-    solver.cpp
+)
+
+add_subdirectory(
+    ${CMAKE_SOURCE_DIR}/../../../../../solver
+    ${CMAKE_BINARY_DIR}/solver_build
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
@@ -41,5 +45,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     log
     ${OpenCV_LIBS}
     litert
+    solver
     # tensorflowlite_c
 )

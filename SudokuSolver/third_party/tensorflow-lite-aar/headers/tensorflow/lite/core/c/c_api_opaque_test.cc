@@ -589,24 +589,24 @@ TEST(TestTfLiteOpaqueNode, CustomOpWithSetAndGetTemporaries) {
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddOperator(options, reg);
 
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   TfLiteInterpreterOptionsDelete(options);
 
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   const float input_value = 42.0f;
   TfLiteTensorCopyFromBuffer(input_tensor, &input_value, sizeof(float));
 
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   float output_value;
   TfLiteTensorCopyToBuffer(output_tensor, &output_value, sizeof(float));
   EXPECT_EQ(output_value, input_value);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOperatorDelete(reg);
   TfLiteModelDelete(model);
 }
@@ -634,24 +634,24 @@ TEST(TestTfLiteOpaqueNode, CustomOpWithLegacyCallbacks) {
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddOperator(options, reg);
 
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   TfLiteInterpreterOptionsDelete(options);
 
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   const float input_value = 42.0f;
   TfLiteTensorCopyFromBuffer(input_tensor, &input_value, sizeof(float));
 
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   float output_value;
   TfLiteTensorCopyToBuffer(output_tensor, &output_value, sizeof(float));
   EXPECT_EQ(output_value, input_value);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOperatorDelete(reg);
   TfLiteModelDelete(model);
 }
@@ -688,24 +688,24 @@ TEST(TestTfLiteOpaqueNode, CustomOpWithNoUserData) {
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddOperator(options, reg);
 
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   TfLiteInterpreterOptionsDelete(options);
 
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   const float input_value = 42.0f;
   TfLiteTensorCopyFromBuffer(input_tensor, &input_value, sizeof(float));
 
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   float output_value;
   TfLiteTensorCopyToBuffer(output_tensor, &output_value, sizeof(float));
   EXPECT_EQ(output_value, input_value);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOperatorDelete(reg);
   TfLiteModelDelete(model);
 }
@@ -742,24 +742,24 @@ TEST(TestTfLiteOpaqueNode, CustomOpWithData) {
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddOperator(options, reg);
 
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   TfLiteInterpreterOptionsDelete(options);
 
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   const float input_value = 42.0f;
   TfLiteTensorCopyFromBuffer(input_tensor, &input_value, sizeof(float));
 
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   float output_value;
   TfLiteTensorCopyToBuffer(output_tensor, &output_value, sizeof(float));
   EXPECT_EQ(output_value, input_value);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOperatorDelete(reg);
   TfLiteModelDelete(model);
 }

@@ -60,8 +60,8 @@ TEST(RemoveUnusedInputs, NothingToRemove) {
 }
 
 TEST(RemoveUnusedInputs, HasUnusedInputs) {
-  Interpreter interpreter;
-  auto& subgraph = interpreter.primary_subgraph();
+  Interpreter g_interpreter;
+  auto& subgraph = g_interpreter.primary_subgraph();
   subgraph.AddTensors(4);
   subgraph.SetInputs({0, 1, 2});
   subgraph.SetOutputs({3});
@@ -73,8 +73,8 @@ TEST(RemoveUnusedInputs, HasUnusedInputs) {
 }
 
 TEST(RemoveUnusedInputs, BypassInputsWithoutOp) {
-  Interpreter interpreter;
-  auto& subgraph = interpreter.primary_subgraph();
+  Interpreter g_interpreter;
+  auto& subgraph = g_interpreter.primary_subgraph();
   subgraph.AddTensors(3);
   subgraph.SetInputs({0, 1, 2});
   subgraph.SetOutputs({0, 2});
@@ -84,8 +84,8 @@ TEST(RemoveUnusedInputs, BypassInputsWithoutOp) {
 }
 
 TEST(GetSubgraphContext, NonConstGetSubgraphContext) {
-  Interpreter interpreter;
-  auto& subgraph = interpreter.primary_subgraph();
+  Interpreter g_interpreter;
+  auto& subgraph = g_interpreter.primary_subgraph();
   TfLiteContext* context = nullptr;
 
   EXPECT_EQ(kTfLiteError, subgraph.AcquireSubgraphContext(-1, &context));

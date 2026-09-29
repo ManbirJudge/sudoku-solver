@@ -1,7 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    // alias(libs.plugins.kotlin.android)
-    // id("com.mikepenz.aboutlibraries.plugin")
 }
 
 android {
@@ -23,7 +21,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                cppFlags += listOf("-std=c++11", "-frtti", "-fexceptions")
+                cppFlags += listOf("-std=c++17", "-frtti", "-fexceptions")
                 arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
             }
         }
@@ -36,6 +34,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
@@ -43,12 +42,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    // kotlin {
-    //     compilerOptions {
-    //         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
-    //     }
-    // }
 
     externalNativeBuild {
         cmake {
@@ -67,8 +60,6 @@ android {
 dependencies {
     implementation(project(":opencv"))
 
-    // implementation(libs.aboutlibraries)
-
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
@@ -85,6 +76,6 @@ dependencies {
 
     implementation(libs.material)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit.v130)
+    // testImplementation(libs.junit)
+    // androidTestImplementation(libs.androidx.junit.v130)
 }

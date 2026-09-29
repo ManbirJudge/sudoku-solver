@@ -30,7 +30,7 @@ class BugReportFragment : Fragment() {
         binding.bugReportEmailUsTxt.setOnClickListener {
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = "mailto:".toUri()
-                putExtra(Intent.EXTRA_EMAIL, arrayOf("manbirjudge2009@gmail.com"))
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("manbirjudge4@gmail.com"))
                 putExtra(Intent.EXTRA_SUBJECT, "Sudoku Solver - Bug Report")
             }
 

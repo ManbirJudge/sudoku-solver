@@ -90,28 +90,28 @@ TEST(CApiSimple, Smoke) {
   ASSERT_NE(options, nullptr);
   TfLiteInterpreterOptionsSetNumThreads(options, 2);
 
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
-  ASSERT_NE(interpreter, nullptr);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
+  ASSERT_NE(g_interpreter, nullptr);
 
   // The options/model can be deleted immediately after interpreter creation.
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  ASSERT_EQ(TfLiteInterpreterGetInputTensorCount(interpreter), 1);
-  ASSERT_EQ(TfLiteInterpreterGetOutputTensorCount(interpreter), 1);
-  EXPECT_NE(TfLiteInterpreterInputTensorIndices(interpreter), nullptr);
-  EXPECT_EQ(TfLiteInterpreterInputTensorIndices(interpreter)[0], 1);
-  EXPECT_NE(TfLiteInterpreterOutputTensorIndices(interpreter), nullptr);
-  EXPECT_EQ(TfLiteInterpreterOutputTensorIndices(interpreter)[0], 2);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterGetInputTensorCount(g_interpreter), 1);
+  ASSERT_EQ(TfLiteInterpreterGetOutputTensorCount(g_interpreter), 1);
+  EXPECT_NE(TfLiteInterpreterInputTensorIndices(g_interpreter), nullptr);
+  EXPECT_EQ(TfLiteInterpreterInputTensorIndices(g_interpreter)[0], 1);
+  EXPECT_NE(TfLiteInterpreterOutputTensorIndices(g_interpreter), nullptr);
+  EXPECT_EQ(TfLiteInterpreterOutputTensorIndices(g_interpreter)[0], 2);
 
   std::array<int, 1> input_dims = {2};
   ASSERT_EQ(TfLiteInterpreterResizeInputTensor(
-                interpreter, 0, input_dims.data(), input_dims.size()),
+          g_interpreter, 0, input_dims.data(), input_dims.size()),
             kTfLiteOk);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   ASSERT_NE(input_tensor, nullptr);
   EXPECT_EQ(TfLiteTensorType(input_tensor), kTfLiteFloat32);
   EXPECT_EQ(TfLiteTensorNumDims(input_tensor), 1);
@@ -130,10 +130,10 @@ TEST(CApiSimple, Smoke) {
                                        input.size() * sizeof(float)),
             kTfLiteOk);
 
-  ASSERT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   ASSERT_NE(output_tensor, nullptr);
   EXPECT_EQ(TfLiteTensorType(output_tensor), kTfLiteFloat32);
   EXPECT_EQ(TfLiteTensorNumDims(output_tensor), 1);
@@ -154,7 +154,7 @@ TEST(CApiSimple, Smoke) {
   EXPECT_EQ(output[0], 3.f);
   EXPECT_EQ(output[1], 9.f);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
 }
 
 TEST(CApiSimple, QuantizationParams) {
@@ -163,18 +163,18 @@ TEST(CApiSimple, QuantizationParams) {
       "tensorflow/lite/testdata/add_quantized.bin");
   ASSERT_NE(model, nullptr);
 
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, nullptr);
-  ASSERT_NE(interpreter, nullptr);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, nullptr);
+  ASSERT_NE(g_interpreter, nullptr);
 
   TfLiteModelDelete(model);
 
   const std::array<int, 1> input_dims = {2};
   ASSERT_EQ(TfLiteInterpreterResizeInputTensor(
-                interpreter, 0, input_dims.data(), input_dims.size()),
+          g_interpreter, 0, input_dims.data(), input_dims.size()),
             kTfLiteOk);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   ASSERT_NE(input_tensor, nullptr);
   EXPECT_EQ(TfLiteTensorType(input_tensor), kTfLiteUInt8);
   EXPECT_EQ(TfLiteTensorNumDims(input_tensor), 1);
@@ -190,10 +190,10 @@ TEST(CApiSimple, QuantizationParams) {
                                        input.size() * sizeof(uint8_t)),
             kTfLiteOk);
 
-  ASSERT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   ASSERT_NE(output_tensor, nullptr);
 
   TfLiteQuantizationParams output_params =
@@ -215,7 +215,7 @@ TEST(CApiSimple, QuantizationParams) {
   EXPECT_EQ(dequantizedOutput0, 0.011766f);
   EXPECT_EQ(dequantizedOutput1, 0.035298f);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
 }
 
 TEST(CApiSimple, TfLiteInterpreterGetTensor) {
@@ -227,24 +227,24 @@ TEST(CApiSimple, TfLiteInterpreterGetTensor) {
   ASSERT_NE(options, nullptr);
   TfLiteInterpreterOptionsSetNumThreads(options, 2);
 
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
-  ASSERT_NE(interpreter, nullptr);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
+  ASSERT_NE(g_interpreter, nullptr);
 
   // The options/model can be deleted immediately after interpreter creation.
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
   std::array<int, 1> input_dims = {2};
   ASSERT_EQ(TfLiteInterpreterResizeInputTensor(
-                interpreter, 0, input_dims.data(), input_dims.size()),
+          g_interpreter, 0, input_dims.data(), input_dims.size()),
             kTfLiteOk);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
   // The 'tensorflow/lite/testdata/add.bin' model uses model tensor
   // at index 1 as the input tensor.
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetTensor(interpreter, 1);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetTensor(g_interpreter, 1);
   ASSERT_NE(input_tensor, nullptr);
   EXPECT_EQ(TfLiteTensorType(input_tensor), kTfLiteFloat32);
   EXPECT_EQ(TfLiteTensorNumDims(input_tensor), 1);
@@ -263,12 +263,12 @@ TEST(CApiSimple, TfLiteInterpreterGetTensor) {
                                        input.size() * sizeof(float)),
             kTfLiteOk);
 
-  ASSERT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   // The 'third_party/tensorflow/testdata/add.bin' model uses model tensor
   // at index 2 as the output tensor.
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetTensor(interpreter, 2);
+      TfLiteInterpreterGetTensor(g_interpreter, 2);
   ASSERT_NE(output_tensor, nullptr);
   EXPECT_EQ(TfLiteTensorType(output_tensor), kTfLiteFloat32);
   EXPECT_EQ(TfLiteTensorNumDims(output_tensor), 1);
@@ -289,7 +289,7 @@ TEST(CApiSimple, TfLiteInterpreterGetTensor) {
   EXPECT_EQ(output[0], 3.f);
   EXPECT_EQ(output[1], 9.f);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
 }
 
 #if !TFLITE_USE_OPAQUE_DELEGATE
@@ -307,7 +307,7 @@ TEST(CApiSimple, Delegate) {
   };
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, &delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   // The delegate should have been applied.
   EXPECT_TRUE(delegate_prepared);
@@ -315,8 +315,8 @@ TEST(CApiSimple, Delegate) {
   // Subsequent execution should behave properly (the delegate is a no-op).
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
-  TfLiteInterpreterDelete(interpreter);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
+  TfLiteInterpreterDelete(g_interpreter);
 }
 #endif
 
@@ -346,13 +346,13 @@ TEST(CApiSimple, DelegateExternal_GetExecutionPlan) {
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, opaque_delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   // The delegate should have been applied.
   EXPECT_TRUE(delegate_prepared);
 
   TfLiteInterpreterOptionsDelete(options);
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteModelDelete(model);
   TfLiteOpaqueDelegateDelete(opaque_delegate);
 }
@@ -401,13 +401,13 @@ TEST(CApiSimple, DelegateExternal_MarkSubgraphAsDelegationSkippable) {
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, opaque_delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   // The delegate should have been applied.
   EXPECT_TRUE(delegate_prepared);
 
   TfLiteInterpreterOptionsDelete(options);
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteModelDelete(model);
   TfLiteOpaqueDelegateDelete(opaque_delegate);
 }
@@ -424,10 +424,10 @@ TEST(CApiSimple, DelegateFails) {
   };
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, &delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   // Interpreter creation should fail as delegate preparation failed.
-  EXPECT_EQ(nullptr, interpreter);
+  EXPECT_EQ(nullptr, g_interpreter);
 
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
@@ -521,7 +521,7 @@ TEST(CApiSimple, OpaqueDelegate_ReplaceNodeSubsetsWithDelegateKernels) {
   EXPECT_EQ(g_nodes_to_replace->size(), 0);
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, opaque_delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
   TfLiteModelDelete(model);
 
   // The delegate should have been applied.
@@ -534,7 +534,7 @@ TEST(CApiSimple, OpaqueDelegate_ReplaceNodeSubsetsWithDelegateKernels) {
   EXPECT_EQ(nodes_to_replace[1], 1);
 
   TfLiteInterpreterOptionsDelete(options);
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOpaqueDelegateDelete(opaque_delegate);
   delete g_nodes_to_replace;
   g_opaque_delegate_struct = nullptr;
@@ -580,7 +580,7 @@ TEST(CApiSimple, OpaqueDelegate_TransferOperatorOwnershipWithoutNodeToReplace) {
   EXPECT_EQ(g_nodes_to_replace->size(), 0);
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, opaque_delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
   TfLiteModelDelete(model);
 
   // The delegate should have been applied with 0 node to replace.
@@ -589,7 +589,7 @@ TEST(CApiSimple, OpaqueDelegate_TransferOperatorOwnershipWithoutNodeToReplace) {
   EXPECT_EQ(nodes_to_replace.size(), 0);
 
   TfLiteInterpreterOptionsDelete(options);
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOpaqueDelegateDelete(opaque_delegate);
   delete g_nodes_to_replace;
   g_opaque_delegate_struct = nullptr;
@@ -684,21 +684,21 @@ TEST(CApiSimple, ErrorReporter) {
   // Install a custom error reporter into the interpreter by way of options.
   tflite::TestErrorReporter reporter;
   TfLiteInterpreterOptionsSetErrorReporter(options, error_reporter, &reporter);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   // The options/model can be deleted immediately after interpreter creation.
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 
   // Invoke the interpreter before tensor allocation.
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteError);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteError);
 
   // The error should propagate to the custom error reporter.
   EXPECT_EQ(reporter.error_messages(),
             "Invoke called on model that is not ready.");
   EXPECT_EQ(reporter.num_calls(), 1);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
 }
 
 TEST(CApiSimple, ModelCreateWithErrorReporter) {
@@ -874,12 +874,12 @@ TEST(CApiSimple, OpaqueDelegate_TfLiteOpaqueTensorGet) {
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, opaque_delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   // The delegate should have been applied.
   EXPECT_TRUE(delegate_state.delegate_prepared);
 
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   ASSERT_NE(input_tensor, nullptr);
   EXPECT_EQ(TfLiteTensorType(input_tensor), kTfLiteFloat32);
   EXPECT_NE(TfLiteTensorData(input_tensor), nullptr);
@@ -895,10 +895,10 @@ TEST(CApiSimple, OpaqueDelegate_TfLiteOpaqueTensorGet) {
   //
   // Run the interpreter
   //
-  ASSERT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   ASSERT_NE(output_tensor, nullptr);
   EXPECT_EQ(TfLiteTensorType(output_tensor), kTfLiteFloat32);
   EXPECT_NE(TfLiteTensorData(output_tensor), nullptr);
@@ -917,7 +917,7 @@ TEST(CApiSimple, OpaqueDelegate_TfLiteOpaqueTensorGet) {
   }
 
   TfLiteInterpreterOptionsDelete(options);
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteModelDelete(model);
   TfLiteOpaqueDelegateDelete(opaque_delegate);
 }
@@ -997,13 +997,13 @@ TEST(CApiSimple, OpaqueContextGetNodeAndRegistration) {
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, opaque_delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
   TfLiteModelDelete(model);
 
   // The delegate should have been applied.
   EXPECT_TRUE(delegate_state.prepared);
   TfLiteInterpreterOptionsDelete(options);
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOpaqueDelegateDelete(opaque_delegate);
 }
 
@@ -1056,13 +1056,13 @@ TEST(CApiSimple, TfLiteOpaqueContextResizeTensor) {
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, opaque_delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
   TfLiteModelDelete(model);
 
   // The delegate should have been applied.
   EXPECT_TRUE(delegate_state.prepared);
   TfLiteInterpreterOptionsDelete(options);
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOpaqueDelegateDelete(opaque_delegate);
 }
 
@@ -1165,23 +1165,23 @@ TEST(CApiSimple, CustomOpSupport) {
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddOperator(options, reg);
 
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
 
   TfLiteInterpreterOptionsDelete(options);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   float input_value = 1.0f;
   TfLiteTensorCopyFromBuffer(input_tensor, &input_value, sizeof(float));
 
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   float output_value;
   TfLiteTensorCopyToBuffer(output_tensor, &output_value, sizeof(float));
   EXPECT_EQ(output_value, std::sinh(1.0f));
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteModelDelete(model);
   TfLiteOperatorDelete(reg);
 }
@@ -1474,27 +1474,27 @@ TEST(CApiSimple, OpaqueApiAccessors) {
   // Construct a model in-memory with various node and tensor properties that
   // we are going to query with the API functions that work with opaque types.
   //
-  ::tflite::Interpreter interpreter;
-  interpreter.primary_subgraph().SetName(kSubgraphName);
-  interpreter.AddTensors(3);
+  ::tflite::Interpreter g_interpreter;
+  g_interpreter.primary_subgraph().SetName(kSubgraphName);
+  g_interpreter.AddTensors(3);
   std::vector<int> dims = {1, 3};
   std::vector<int> dims_signature = {-1, 3};
-  interpreter.SetTensorParametersReadWrite(
+  g_interpreter.SetTensorParametersReadWrite(
       0, kTfLiteFloat32, "a", dims, TfLiteQuantizationParams{1.0, 0},
       /*is_variable=*/false, &dims_signature);
-  interpreter.SetTensorParametersReadWrite(
+  g_interpreter.SetTensorParametersReadWrite(
       1, kTfLiteFloat32, "b", dims, TfLiteQuantizationParams{1.0, 0},
       /*is_variable=*/true, &dims_signature);
-  interpreter.SetTensorParametersReadWrite(
+  g_interpreter.SetTensorParametersReadWrite(
       2, kTfLiteFloat32, "c", dims, TfLiteQuantizationParams{1.0, 0},
       /*is_variable=*/false, &dims_signature);
   // Add an additional "blank" tensor that doesn't have its properties set via
   // an API like 'SetTensorParametersReadWrite' to simulate the case where one
   // or multiple blank tensors are added after the model has been loaded.
-  interpreter.AddTensors(1);
+  g_interpreter.AddTensors(1);
 
-  interpreter.SetInputs({0, 1});
-  interpreter.SetOutputs({2});
+  g_interpreter.SetInputs({0, 1});
+  g_interpreter.SetOutputs({2});
   const char* initial_data = "";
   tflite::ops::builtin::BuiltinOpResolverWithoutDefaultDelegates resolver;
   TfLiteAddParams* builtin_data =
@@ -1503,9 +1503,9 @@ TEST(CApiSimple, OpaqueApiAccessors) {
   builtin_data->pot_scale_int16 = false;
   const TfLiteRegistration* reg =
       resolver.FindOp(::tflite::BuiltinOperator_ADD, 1);
-  interpreter.AddNodeWithParameters({0, 1}, {2}, initial_data, 0, builtin_data,
+  g_interpreter.AddNodeWithParameters({0, 1}, {2}, initial_data, 0, builtin_data,
                                     reg);
-  interpreter.primary_subgraph().variables().push_back(1);
+  g_interpreter.primary_subgraph().variables().push_back(1);
 
   //
   // We delegate all nodes to a kernel, so that the TFLite runtime provides us
@@ -1809,24 +1809,24 @@ TEST(CApiSimple, OpaqueApiAccessors) {
   TfLiteDelegate my_delegate{};
   my_delegate.opaque_delegate_builder = &opaque_delegate_builder;
 
-  EXPECT_EQ(kTfLiteOk, interpreter.ModifyGraphWithDelegate(&my_delegate));
+  EXPECT_EQ(kTfLiteOk, g_interpreter.ModifyGraphWithDelegate(&my_delegate));
   EXPECT_TRUE(delegate_kernel_invoked);
 }
 
 TEST(CApiSimple, OpaqueApiAccessorsStrings) {
-  ::tflite::Interpreter interpreter;
-  interpreter.AddTensors(3);
+  ::tflite::Interpreter g_interpreter;
+  g_interpreter.AddTensors(3);
   std::vector<int> dims = {1};
   TfLiteQuantizationParams quant{};
-  interpreter.SetTensorParametersReadWrite(0, kTfLiteString, "a", dims, quant,
+  g_interpreter.SetTensorParametersReadWrite(0, kTfLiteString, "a", dims, quant,
                                            /*is_variable=*/false);
-  interpreter.SetTensorParametersReadWrite(1, kTfLiteString, "b", dims, quant,
+  g_interpreter.SetTensorParametersReadWrite(1, kTfLiteString, "b", dims, quant,
                                            /*is_variable=*/false);
-  interpreter.SetTensorParametersReadWrite(2, kTfLiteString, "c", dims, quant,
+  g_interpreter.SetTensorParametersReadWrite(2, kTfLiteString, "c", dims, quant,
                                            /*is_variable=*/false);
 
-  interpreter.SetInputs({0, 1});
-  interpreter.SetOutputs({2});
+  g_interpreter.SetInputs({0, 1});
+  g_interpreter.SetOutputs({2});
   const char* initial_data = "";
   tflite::ops::builtin::BuiltinOpResolverWithoutDefaultDelegates resolver;
   TfLiteAddParams* builtin_data =
@@ -1835,7 +1835,7 @@ TEST(CApiSimple, OpaqueApiAccessorsStrings) {
   builtin_data->pot_scale_int16 = false;
   const TfLiteRegistration* registration =
       resolver.FindOp(::tflite::BuiltinOperator_ADD, 1);
-  interpreter.AddNodeWithParameters({0, 1}, {2}, initial_data, 0, builtin_data,
+  g_interpreter.AddNodeWithParameters({0, 1}, {2}, initial_data, 0, builtin_data,
                                     registration);
 
   TfLiteOpaqueDelegateBuilder opaque_delegate_builder{};
@@ -1955,14 +1955,14 @@ TEST(CApiSimple, OpaqueApiAccessorsStrings) {
 
   TfLiteDelegate my_delegate{};
   my_delegate.opaque_delegate_builder = &opaque_delegate_builder;
-  EXPECT_EQ(kTfLiteOk, interpreter.ModifyGraphWithDelegate(&my_delegate));
+  EXPECT_EQ(kTfLiteOk, g_interpreter.ModifyGraphWithDelegate(&my_delegate));
   EXPECT_TRUE(delegate_kernel_invoked);
-  EXPECT_EQ(kTfLiteOk, interpreter.AllocateTensors());
+  EXPECT_EQ(kTfLiteOk, g_interpreter.AllocateTensors());
 
   //
   // Load input tensors with string data.
   //
-  TfLiteTensor* t0 = interpreter.tensor(0);
+  TfLiteTensor* t0 = g_interpreter.tensor(0);
   tflite::DynamicBuffer buf0;
   const char* raw_buf_with_embedded_null = "DDD\0EEE";
   const char* raw_buf_without_embedded_null = "12345678";
@@ -1977,7 +1977,7 @@ TEST(CApiSimple, OpaqueApiAccessorsStrings) {
   }
   buf0.WriteToTensorAsVector(t0);
 
-  TfLiteTensor* t1 = interpreter.tensor(1);
+  TfLiteTensor* t1 = g_interpreter.tensor(1);
   char s1[] = "XYZ";
   tflite::DynamicBuffer buf1;
   ASSERT_EQ(buf1.AddString(s1, 3), kTfLiteOk);
@@ -1987,7 +1987,7 @@ TEST(CApiSimple, OpaqueApiAccessorsStrings) {
   // Invoke the interpreter, so that the input tensor strings get copied to the
   // output tensor.
   //
-  EXPECT_EQ(kTfLiteOk, interpreter.Invoke());
+  EXPECT_EQ(kTfLiteOk, g_interpreter.Invoke());
 
   //
   // Check that the output tensor stores the combination of the input strings.
@@ -1996,7 +1996,7 @@ TEST(CApiSimple, OpaqueApiAccessorsStrings) {
       "ABC",
       std::string(raw_buf_with_embedded_null, raw_buf_with_embedded_null + 6),
       "F", "1234", "XYZ"};
-  TfLiteTensor* t2 = interpreter.tensor(2);
+  TfLiteTensor* t2 = g_interpreter.tensor(2);
   EXPECT_EQ(tflite::GetStringCount(t2), expected_strings.size());
   for (int i = 0; i < tflite::GetStringCount(t2); ++i) {
     tflite::StringRef str_ref = tflite::GetString(t2, i);
@@ -2031,24 +2031,24 @@ TEST(CApiSimple, AddNodesAfterApplyingDelegate) {
   // happening within that data structure.  For test coverage purposes this test
   // is valuable, though users should not write such code.
 
-  ::tflite::Interpreter interpreter;
-  interpreter.AddTensors(3);
+  ::tflite::Interpreter g_interpreter;
+  g_interpreter.AddTensors(3);
   std::vector<int> dims = {1, 3};
   std::vector<int> dims_signature = {-1, 3};
-  interpreter.SetTensorParametersReadWrite(
+  g_interpreter.SetTensorParametersReadWrite(
       0, kTfLiteFloat32, "a", dims, TfLiteQuantizationParams{1.0, 0},
       /*is_variable=*/false, &dims_signature);
-  interpreter.SetTensorParametersReadWrite(
+  g_interpreter.SetTensorParametersReadWrite(
       1, kTfLiteFloat32, "b", dims, TfLiteQuantizationParams{1.0, 0},
       /*is_variable=*/false, &dims_signature);
-  interpreter.SetTensorParametersReadWrite(
+  g_interpreter.SetTensorParametersReadWrite(
       2, kTfLiteFloat32, "c", dims, TfLiteQuantizationParams{1.0, 0},
       /*is_variable=*/false, &dims_signature);
 
-  interpreter.SetInputs({0, 1});
-  interpreter.SetOutputs({2});
+  g_interpreter.SetInputs({0, 1});
+  g_interpreter.SetOutputs({2});
   tflite::ops::builtin::BuiltinOpResolverWithoutDefaultDelegates resolver;
-  AddNode(&resolver, &interpreter);
+  AddNode(&resolver, &g_interpreter);
 
   TfLiteOpaqueDelegateBuilder opaque_delegate_builder{};
   opaque_delegate_builder.flags = kTfLiteDelegateFlagsAllowDynamicTensors;
@@ -2075,11 +2075,11 @@ TEST(CApiSimple, AddNodesAfterApplyingDelegate) {
   TfLiteDelegate my_delegate{};
   my_delegate.opaque_delegate_builder = &opaque_delegate_builder;
 
-  EXPECT_EQ(kTfLiteOk, interpreter.ModifyGraphWithDelegate(&my_delegate));
+  EXPECT_EQ(kTfLiteOk, g_interpreter.ModifyGraphWithDelegate(&my_delegate));
   EXPECT_TRUE(delegate_prepare_invoked);
 
   for (int i = 0; i < 500; ++i) {
-    AddNode(&resolver, &interpreter);
+    AddNode(&resolver, &g_interpreter);
   }
 }
 

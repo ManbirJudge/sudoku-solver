@@ -72,13 +72,13 @@ TEST(CApiExperimentalTest, Smoke) {
                                        GetNoOpRegistration(), 1, 1);
   TfLiteInterpreterOptionsSetUseNNAPI(options, true);
 
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -93,14 +93,14 @@ TEST(CApiExperimentalTest, SelectedBuiltins) {
   TfLiteInterpreterOptionsAddBuiltinOp(options, kTfLiteBuiltinAdd,
                                        GetNoOpRegistration(), 1, 1);
 
-  TfLiteInterpreter* interpreter =
+  TfLiteInterpreter* g_interpreter =
       TfLiteInterpreterCreateWithSelectedOps(model, options);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -124,18 +124,18 @@ TEST(CApiExperimentalTest, MissingBuiltin) {
       &reporter);
 
   // Create an interpreter with no builtins at all.
-  TfLiteInterpreter* interpreter =
+  TfLiteInterpreter* g_interpreter =
       TfLiteInterpreterCreateWithSelectedOps(model, options);
 
   // Check that interpreter creation failed, because the model contain a buitin
   // op that wasn't supported, and that we got the expected error messages.
-  ASSERT_EQ(interpreter, nullptr);
+  ASSERT_EQ(g_interpreter, nullptr);
   EXPECT_THAT(
       reporter.error_messages(),
       HasSubstr("Didn't find op for builtin opcode 'ADD' version '1'."));
   EXPECT_EQ(reporter.num_calls(), 2);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -176,15 +176,15 @@ TEST(CApiExperimentalTest, SetOpResolver) {
                                         MyFindCustomOp, &my_data);
   EXPECT_FALSE(my_data.called_for_add);
 
-  TfLiteInterpreter* interpreter =
+  TfLiteInterpreter* g_interpreter =
       TfLiteInterpreterCreateWithSelectedOps(model, options);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
   EXPECT_TRUE(my_data.called_for_add);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -285,15 +285,15 @@ TEST(CApiExperimentalTest, SetOpResolverExternal) {
       options, MyFindBuiltinOpExternal, MyFindCustomOpExternal, &my_data);
   EXPECT_FALSE(my_data.called_for_add);
 
-  TfLiteInterpreter* interpreter =
+  TfLiteInterpreter* g_interpreter =
       TfLiteInterpreterCreateWithSelectedOps(model, options);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
   EXPECT_TRUE(my_data.called_for_add);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -320,15 +320,15 @@ TEST(CApiExperimentalTest,
       &my_data);
   EXPECT_FALSE(my_data.called_for_add);
 
-  TfLiteInterpreter* interpreter =
+  TfLiteInterpreter* g_interpreter =
       TfLiteInterpreterCreateWithSelectedOps(model, options);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
   EXPECT_TRUE(my_data.called_for_add);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -356,15 +356,15 @@ TEST(CApiExperimentalTest,
       MyFindBuiltinOp, MyFindCustomOp, &my_data);
   EXPECT_FALSE(my_data.called_for_add);
 
-  TfLiteInterpreter* interpreter =
+  TfLiteInterpreter* g_interpreter =
       TfLiteInterpreterCreateWithSelectedOps(model, options);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterResetVariableTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
   EXPECT_TRUE(my_data.called_for_add);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -391,24 +391,24 @@ TEST(CApiExperimentalTest,
       &my_data);
   EXPECT_FALSE(my_data.called_for_add);
 
-  TfLiteInterpreter* interpreter =
+  TfLiteInterpreter* g_interpreter =
       TfLiteInterpreterCreateWithSelectedOps(model, options);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   const float input_value = 1.0f;
   TfLiteTensorCopyFromBuffer(input_tensor, &input_value, sizeof(float));
 
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   float output_value;
   TfLiteTensorCopyToBuffer(output_tensor, &output_value, sizeof(float));
   EXPECT_EQ(output_value, std::sinh(input_value));
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -436,25 +436,25 @@ TEST(CApiExperimentalTest,
       MyFindBuiltinOp, SinhFindCustomOp, &my_data);
   EXPECT_FALSE(my_data.called_for_add);
 
-  TfLiteInterpreter* interpreter =
+  TfLiteInterpreter* g_interpreter =
       TfLiteInterpreterCreateWithSelectedOps(model, options);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   const float input_value = 1.0f;
   TfLiteTensorCopyFromBuffer(input_tensor, &input_value, sizeof(float));
 
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
   EXPECT_FALSE(my_data.called_for_add);
 
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, 0);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, 0);
   float output_value;
   TfLiteTensorCopyToBuffer(output_tensor, &output_value, sizeof(float));
   EXPECT_EQ(output_value, std::sinh(input_value));
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -492,32 +492,32 @@ TEST(CApiExperimentalTest, SetCustomAllocationForInputTensorSuccess) {
   ASSERT_NE(model, nullptr);
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
-  ASSERT_NE(interpreter, nullptr);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
+  ASSERT_NE(g_interpreter, nullptr);
 
   int tensor_idx = 0;
   // Checks null allocation.
   ASSERT_EQ(
       TfLiteInterpreterSetCustomAllocationForTensor(
-          interpreter, tensor_idx, nullptr, kTfLiteCustomAllocationFlagsNone),
+          g_interpreter, tensor_idx, nullptr, kTfLiteCustomAllocationFlagsNone),
       kTfLiteError);
 
   int required_alignment = tflite::kDefaultTensorAlignment;
   const TfLiteTensor* input_tensor =
-      TfLiteInterpreterGetInputTensor(interpreter, tensor_idx);
+      TfLiteInterpreterGetInputTensor(g_interpreter, tensor_idx);
   char* new_alloc;
   auto input_tensor_alloc =
       NewCustomAlloc(input_tensor->bytes, required_alignment, &new_alloc);
   ASSERT_EQ(TfLiteInterpreterSetCustomAllocationForTensor(
-                interpreter, tensor_idx, &input_tensor_alloc,
-                kTfLiteCustomAllocationFlagsNone),
+          g_interpreter, tensor_idx, &input_tensor_alloc,
+          kTfLiteCustomAllocationFlagsNone),
             kTfLiteOk);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   delete[] new_alloc;
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -528,45 +528,45 @@ TEST(CApiExperimentalTest, SetCustomAllocationForOutputTensorSuccess) {
   ASSERT_NE(model, nullptr);
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
-  ASSERT_NE(interpreter, nullptr);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
+  ASSERT_NE(g_interpreter, nullptr);
   int tensor_idx = 0;
   std::array<int, 1> input_dims = {2};
   ASSERT_EQ(TfLiteInterpreterResizeInputTensor(
-                interpreter, tensor_idx, input_dims.data(), input_dims.size()),
+          g_interpreter, tensor_idx, input_dims.data(), input_dims.size()),
             kTfLiteOk);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
   // Sets custom allocation for output tensor.
   const TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetOutputTensor(interpreter, tensor_idx);
+      TfLiteInterpreterGetOutputTensor(g_interpreter, tensor_idx);
   char* new_alloc;
   int required_alignment = tflite::kDefaultTensorAlignment;
   auto output_tensor_alloc =
       NewCustomAlloc(output_tensor->bytes, required_alignment, &new_alloc);
   ASSERT_EQ(TfLiteInterpreterSetCustomAllocationForTensor(
-                interpreter, tensor_idx, &output_tensor_alloc,
-                kTfLiteCustomAllocationFlagsNone),
+          g_interpreter, tensor_idx, &output_tensor_alloc,
+          kTfLiteCustomAllocationFlagsNone),
             kTfLiteOk);
-  ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  ASSERT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
   // Verifies output are expected.
   std::array<float, 2> input = {1.f, 3.f};
   ASSERT_EQ(TfLiteTensorCopyFromBuffer(
-                TfLiteInterpreterGetInputTensor(interpreter, tensor_idx),
+                TfLiteInterpreterGetInputTensor(g_interpreter, tensor_idx),
                 input.data(), input.size() * sizeof(float)),
             kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
   std::array<float, 2> output;
   ASSERT_EQ(TfLiteTensorCopyToBuffer(
-                TfLiteInterpreterGetOutputTensor(interpreter, tensor_idx),
+                TfLiteInterpreterGetOutputTensor(g_interpreter, tensor_idx),
                 output.data(), output.size() * sizeof(float)),
             kTfLiteOk);
   EXPECT_EQ(output[0], 3.f);
   EXPECT_EQ(output[1], 9.f);
 
   delete[] new_alloc;
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -589,13 +589,13 @@ TEST(CApiExperimentalTest, SetAndGetBufferHandleSuccess) {
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
-  ASSERT_NE(interpreter, nullptr);
-  EXPECT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
+  ASSERT_NE(g_interpreter, nullptr);
+  EXPECT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
   // Tensor index is set to the input tensor (index 1) of the TfLiteModel.
   int tensor_index = 1;
-  TfLiteTensor* tensor = TfLiteInterpreterGetTensor(interpreter, tensor_index);
+  TfLiteTensor* tensor = TfLiteInterpreterGetTensor(g_interpreter, tensor_index);
   ASSERT_EQ(tensor->buffer_handle, kTfLiteNullBufferHandle);
   ASSERT_EQ(tensor->delegate, nullptr);
 
@@ -604,7 +604,7 @@ TEST(CApiExperimentalTest, SetAndGetBufferHandleSuccess) {
 
   TfLiteDelegate* expected_delegate = delegate;
   TfLiteBufferHandle expected_buffer_handle = buffer_handle;
-  ASSERT_EQ(TfLiteInterpreterSetBufferHandle(interpreter, tensor, buffer_handle,
+  ASSERT_EQ(TfLiteInterpreterSetBufferHandle(g_interpreter, tensor, buffer_handle,
                                              delegate),
             kTfLiteOk);
   ASSERT_EQ(tensor->delegate, expected_delegate);
@@ -614,14 +614,14 @@ TEST(CApiExperimentalTest, SetAndGetBufferHandleSuccess) {
   TfLiteBufferHandle fetched_buffer_handle;
   ASSERT_EQ(
       TfLiteInterpreterGetBufferHandle(
-          interpreter, tensor_index, &fetched_buffer_handle, &fetched_delegate),
+          g_interpreter, tensor_index, &fetched_buffer_handle, &fetched_delegate),
       kTfLiteOk);
   ASSERT_EQ(fetched_delegate, expected_delegate);
   ASSERT_EQ(fetched_buffer_handle, expected_buffer_handle);
 
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }
@@ -732,14 +732,14 @@ TEST(CApiExperimentalTest, SetAllowBufferHandleOutputFalse) {
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, tflite_delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
-  ASSERT_NE(interpreter, nullptr);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
+  ASSERT_NE(g_interpreter, nullptr);
 
   // Allocate tensor buffers.
-  EXPECT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
   // Fill input buffers
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   float* input = reinterpret_cast<float*>(input_tensor->data.raw);
   std::fill(input, input + kNumTensorElements, 1);
 
@@ -752,20 +752,20 @@ TEST(CApiExperimentalTest, SetAllowBufferHandleOutputFalse) {
   int tensor_index = 2;
 
   TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetTensor(interpreter, tensor_index);
+      TfLiteInterpreterGetTensor(g_interpreter, tensor_index);
 
   ASSERT_EQ(
-      TfLiteInterpreterSetBufferHandle(interpreter, output_tensor,
+      TfLiteInterpreterSetBufferHandle(g_interpreter, output_tensor,
                                        first_buffer_handle, tflite_delegate),
       kTfLiteOk);
 
   output_tensor->data_is_stale = true;
 
-  TfLiteSetAllowBufferHandleOutput(interpreter,
+  TfLiteSetAllowBufferHandleOutput(g_interpreter,
                                    /*allow_buffer_handle_output=*/false);
 
   // Run inference
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
   EXPECT_TRUE(delegate_state.delegate_prepared);
   EXPECT_TRUE(delegate_state.copy_from_buffer_handle_called);
   EXPECT_EQ(delegate_state.buffer_handle, first_buffer_handle);
@@ -780,7 +780,7 @@ TEST(CApiExperimentalTest, SetAllowBufferHandleOutputFalse) {
   // Destroying the interpreter will release any buffer handles that are
   // associated with the tensors owner by the interpreter.
   delegate_state.Reset();
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOpaqueDelegateDelete(tflite_delegate);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
@@ -810,14 +810,14 @@ TEST(CApiExperimentalTest, SetAllowBufferHandleOutputTrue) {
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, tflite_delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
-  ASSERT_NE(interpreter, nullptr);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
+  ASSERT_NE(g_interpreter, nullptr);
 
   // Allocate tensor buffers.
-  EXPECT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
 
   // Fill input buffers
-  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
+  TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(g_interpreter, 0);
   float* input = reinterpret_cast<float*>(input_tensor->data.raw);
   std::fill(input, input + kNumTensorElements, 1);
 
@@ -831,20 +831,20 @@ TEST(CApiExperimentalTest, SetAllowBufferHandleOutputTrue) {
   int tensor_index = 2;
 
   TfLiteTensor* output_tensor =
-      TfLiteInterpreterGetTensor(interpreter, tensor_index);
+      TfLiteInterpreterGetTensor(g_interpreter, tensor_index);
 
   ASSERT_EQ(
-      TfLiteInterpreterSetBufferHandle(interpreter, output_tensor,
+      TfLiteInterpreterSetBufferHandle(g_interpreter, output_tensor,
                                        first_buffer_handle, tflite_delegate),
       kTfLiteOk);
 
   output_tensor->data_is_stale = true;
 
-  TfLiteSetAllowBufferHandleOutput(interpreter,
+  TfLiteSetAllowBufferHandleOutput(g_interpreter,
                                    /*allow_buffer_handle_output=*/true);
 
   // Run inference
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
   EXPECT_TRUE(delegate_state.delegate_prepared);
   EXPECT_FALSE(delegate_state.copy_from_buffer_handle_called);
   EXPECT_EQ(delegate_state.buffer_handle, first_buffer_handle);
@@ -855,7 +855,7 @@ TEST(CApiExperimentalTest, SetAllowBufferHandleOutputTrue) {
   // Destroying the interpreter will release any buffer handles that are
   // associated with the tensors owner by the interpreter.
   delegate_state.Reset();
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteOpaqueDelegateDelete(tflite_delegate);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
@@ -881,11 +881,11 @@ TEST(CApiExperimentalTest, SetInvalidHandleToTensor) {
 
   TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
   TfLiteInterpreterOptionsAddDelegate(options, delegate);
-  TfLiteInterpreter* interpreter = TfLiteInterpreterCreate(model, options);
-  ASSERT_NE(interpreter, nullptr);
+  TfLiteInterpreter* g_interpreter = TfLiteInterpreterCreate(model, options);
+  ASSERT_NE(g_interpreter, nullptr);
 
-  EXPECT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
-  EXPECT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterAllocateTensors(g_interpreter), kTfLiteOk);
+  EXPECT_EQ(TfLiteInterpreterInvoke(g_interpreter), kTfLiteOk);
 
   auto another_simple_delegate = std::make_unique<SimpleDelegate>(
       // The delegate will handle the 0th, 1st and the 2nd indexed nodes in
@@ -898,7 +898,7 @@ TEST(CApiExperimentalTest, SetInvalidHandleToTensor) {
 
   // Tensor index is set to the output tensor (index 2) of the TfLite model.
   int tensor_index = 2;
-  TfLiteTensor* tensor = TfLiteInterpreterGetTensor(interpreter, tensor_index);
+  TfLiteTensor* tensor = TfLiteInterpreterGetTensor(g_interpreter, tensor_index);
 
   // Before setting the buffer handle, the tensor's `delegate` is already set
   // because it will be written by the delegate.
@@ -910,13 +910,13 @@ TEST(CApiExperimentalTest, SetInvalidHandleToTensor) {
 
   // Setting a buffer handle to a tensor with another delegate will fail.
   ASSERT_EQ(TfLiteInterpreterSetBufferHandle(
-                interpreter, tensor, buffer_handle,
-                another_simple_delegate->get_tf_lite_delegate()),
+          g_interpreter, tensor, buffer_handle,
+          another_simple_delegate->get_tf_lite_delegate()),
             kTfLiteError);
   EXPECT_EQ(tensor->delegate, delegate);
   EXPECT_EQ(tensor->buffer_handle, kTfLiteNullBufferHandle);
 
-  TfLiteInterpreterDelete(interpreter);
+  TfLiteInterpreterDelete(g_interpreter);
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 }

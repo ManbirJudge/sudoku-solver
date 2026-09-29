@@ -132,10 +132,10 @@ TEST(BasicFlatBufferModel, TestEmptyModels) {
       "tensorflow/lite/testdata/empty_model.bin");
   ASSERT_TRUE(model);
   // Now try to build it into a model.
-  std::unique_ptr<Interpreter> interpreter;
-  ASSERT_EQ(InterpreterBuilder(*model, TrivialResolver())(&interpreter),
+  std::unique_ptr<Interpreter> g_interpreter;
+  ASSERT_EQ(InterpreterBuilder(*model, TrivialResolver())(&g_interpreter),
             kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  ASSERT_NE(g_interpreter, nullptr);
 }
 
 TEST(BasicFlatBufferModel, TestNullDestination) {
@@ -152,17 +152,17 @@ TEST(BasicFlatBufferModel, TestZeroSubgraphs) {
   auto m = FlatBufferModel::BuildFromFile(
       "tensorflow/lite/testdata/0_subgraphs.bin");
   ASSERT_TRUE(m);
-  std::unique_ptr<Interpreter> interpreter;
-  ASSERT_NE(InterpreterBuilder(*m, TrivialResolver())(&interpreter), kTfLiteOk);
+  std::unique_ptr<Interpreter> g_interpreter;
+  ASSERT_NE(InterpreterBuilder(*m, TrivialResolver())(&g_interpreter), kTfLiteOk);
 }
 
 TEST(BasicFlatBufferModel, TestMultipleSubgraphs) {
   auto m = FlatBufferModel::BuildFromFile(
       "tensorflow/lite/testdata/2_subgraphs.bin");
   ASSERT_TRUE(m);
-  std::unique_ptr<Interpreter> interpreter;
-  ASSERT_EQ(InterpreterBuilder(*m, TrivialResolver())(&interpreter), kTfLiteOk);
-  EXPECT_EQ(interpreter->subgraphs_size(), 2);
+  std::unique_ptr<Interpreter> g_interpreter;
+  ASSERT_EQ(InterpreterBuilder(*m, TrivialResolver())(&g_interpreter), kTfLiteOk);
+  EXPECT_EQ(g_interpreter->subgraphs_size(), 2);
 }
 
 TEST(BasicFlatBufferModel, TestSubgraphName) {
@@ -170,11 +170,11 @@ TEST(BasicFlatBufferModel, TestSubgraphName) {
       "tensorflow/lite/testdata/"
       "2_subgraphs_dont_delegate_name.bin");
   ASSERT_TRUE(m);
-  std::unique_ptr<Interpreter> interpreter;
-  ASSERT_EQ(InterpreterBuilder(*m, TrivialResolver())(&interpreter), kTfLiteOk);
-  EXPECT_EQ(interpreter->subgraphs_size(), 2);
-  EXPECT_EQ(interpreter->subgraph(0)->GetName(), "");
-  EXPECT_EQ(interpreter->subgraph(1)->GetName(), "VALIDATION:main");
+  std::unique_ptr<Interpreter> g_interpreter;
+  ASSERT_EQ(InterpreterBuilder(*m, TrivialResolver())(&g_interpreter), kTfLiteOk);
+  EXPECT_EQ(g_interpreter->subgraphs_size(), 2);
+  EXPECT_EQ(g_interpreter->subgraph(0)->GetName(), "");
+  EXPECT_EQ(g_interpreter->subgraph(1)->GetName(), "VALIDATION:main");
 }
 
 // Test what happens if we cannot bind any of the ops.
@@ -183,10 +183,10 @@ TEST(BasicFlatBufferModel, TestModelWithoutNullRegistrations) {
       "tensorflow/lite/testdata/test_model.bin");
   ASSERT_TRUE(model);
   // Check that we get an error code and interpreter pointer is reset.
-  std::unique_ptr<Interpreter> interpreter(new Interpreter);
-  ASSERT_NE(InterpreterBuilder(*model, TrivialResolver(nullptr))(&interpreter),
+  std::unique_ptr<Interpreter> g_interpreter(new Interpreter);
+  ASSERT_NE(InterpreterBuilder(*model, TrivialResolver(nullptr))(&g_interpreter),
             kTfLiteOk);
-  ASSERT_EQ(interpreter, nullptr);
+  ASSERT_EQ(g_interpreter, nullptr);
 }
 
 // Make sure model is read to interpreter properly
@@ -195,37 +195,37 @@ TEST(BasicFlatBufferModel, TestModelInInterpreter) {
       "tensorflow/lite/testdata/test_model.bin");
   ASSERT_TRUE(model);
   // Check that we get an error code and interpreter pointer is reset.
-  std::unique_ptr<Interpreter> interpreter(new Interpreter);
+  std::unique_ptr<Interpreter> g_interpreter(new Interpreter);
   ASSERT_EQ(
-      InterpreterBuilder(*model, TrivialResolver(&dummy_reg))(&interpreter),
+      InterpreterBuilder(*model, TrivialResolver(&dummy_reg))(&g_interpreter),
       kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(interpreter->tensors_size(), 4);
-  ASSERT_EQ(interpreter->nodes_size(), 2);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(g_interpreter->tensors_size(), 4);
+  ASSERT_EQ(g_interpreter->nodes_size(), 2);
   std::vector<int> inputs = {0, 1};
   std::vector<int> outputs = {2, 3};
-  ASSERT_EQ(interpreter->inputs(), inputs);
-  ASSERT_EQ(interpreter->outputs(), outputs);
+  ASSERT_EQ(g_interpreter->inputs(), inputs);
+  ASSERT_EQ(g_interpreter->outputs(), outputs);
 
-  EXPECT_EQ(std::string(interpreter->GetInputName(0)), "input0");
-  EXPECT_EQ(std::string(interpreter->GetInputName(1)), "input1");
-  EXPECT_EQ(std::string(interpreter->GetOutputName(0)), "out1");
-  EXPECT_EQ(std::string(interpreter->GetOutputName(1)), "out2");
+  EXPECT_EQ(std::string(g_interpreter->GetInputName(0)), "input0");
+  EXPECT_EQ(std::string(g_interpreter->GetInputName(1)), "input1");
+  EXPECT_EQ(std::string(g_interpreter->GetOutputName(0)), "out1");
+  EXPECT_EQ(std::string(g_interpreter->GetOutputName(1)), "out2");
 
   // Make sure all input tensors are correct
-  TfLiteTensor* i0 = interpreter->tensor(0);
+  TfLiteTensor* i0 = g_interpreter->tensor(0);
   ASSERT_EQ(i0->type, kTfLiteFloat32);
   ASSERT_NE(i0->data.raw, nullptr);  // mmapped
   ASSERT_EQ(i0->allocation_type, kTfLiteMmapRo);
-  TfLiteTensor* i1 = interpreter->tensor(1);
+  TfLiteTensor* i1 = g_interpreter->tensor(1);
   ASSERT_EQ(i1->type, kTfLiteFloat32);
   ASSERT_EQ(i1->data.raw, nullptr);
   ASSERT_EQ(i1->allocation_type, kTfLiteArenaRw);
-  TfLiteTensor* o0 = interpreter->tensor(2);
+  TfLiteTensor* o0 = g_interpreter->tensor(2);
   ASSERT_EQ(o0->type, kTfLiteFloat32);
   ASSERT_EQ(o0->data.raw, nullptr);
   ASSERT_EQ(o0->allocation_type, kTfLiteArenaRw);
-  TfLiteTensor* o1 = interpreter->tensor(3);
+  TfLiteTensor* o1 = g_interpreter->tensor(3);
   ASSERT_EQ(o1->type, kTfLiteFloat32);
   ASSERT_EQ(o1->data.raw, nullptr);
   ASSERT_EQ(o1->allocation_type, kTfLiteArenaRw);
@@ -233,7 +233,7 @@ TEST(BasicFlatBufferModel, TestModelInInterpreter) {
   // Check op 0 which has inputs {0, 1} outputs {2}.
   {
     const std::pair<TfLiteNode, TfLiteRegistration>* node_and_reg0 =
-        interpreter->node_and_registration(0);
+        g_interpreter->node_and_registration(0);
     ASSERT_NE(node_and_reg0, nullptr);
     const TfLiteNode& node0 = node_and_reg0->first;
     const TfLiteRegistration& reg0 = node_and_reg0->second;
@@ -252,7 +252,7 @@ TEST(BasicFlatBufferModel, TestModelInInterpreter) {
   // Check op 1 which has inputs {2} outputs {3}.
   {
     const std::pair<TfLiteNode, TfLiteRegistration>* node_and_reg1 =
-        interpreter->node_and_registration(1);
+        g_interpreter->node_and_registration(1);
     ASSERT_NE(node_and_reg1, nullptr);
     const TfLiteNode& node1 = node_and_reg1->first;
     const TfLiteRegistration& reg1 = node_and_reg1->second;
@@ -276,25 +276,25 @@ TEST(BasicFlatBufferModel, TestWithNumThreads) {
   TrivialResolver resolver(&dummy_reg);
   InterpreterBuilder builder(*model, resolver);
 
-  std::unique_ptr<Interpreter> interpreter;
-  ASSERT_EQ(builder(&interpreter, /*num_threads=*/42), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(interpreter->subgraph(0)->context()->recommended_num_threads, 42);
+  std::unique_ptr<Interpreter> g_interpreter;
+  ASSERT_EQ(builder(&g_interpreter, /*num_threads=*/42), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(g_interpreter->subgraph(0)->context()->recommended_num_threads, 42);
 
-  interpreter.reset();
-  ASSERT_EQ(builder(&interpreter, 0), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(interpreter->subgraph(0)->context()->recommended_num_threads, 1);
+  g_interpreter.reset();
+  ASSERT_EQ(builder(&g_interpreter, 0), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(g_interpreter->subgraph(0)->context()->recommended_num_threads, 1);
 
-  interpreter.reset();
-  ASSERT_EQ(builder(&interpreter, -1), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(interpreter->subgraph(0)->context()->recommended_num_threads, -1);
+  g_interpreter.reset();
+  ASSERT_EQ(builder(&g_interpreter, -1), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(g_interpreter->subgraph(0)->context()->recommended_num_threads, -1);
 
   ASSERT_EQ(reporter.num_calls(), 0);
-  interpreter = std::make_unique<Interpreter>();
-  ASSERT_EQ(builder(&interpreter, -2), kTfLiteError);
-  ASSERT_EQ(interpreter, nullptr);
+  g_interpreter = std::make_unique<Interpreter>();
+  ASSERT_EQ(builder(&g_interpreter, -2), kTfLiteError);
+  ASSERT_EQ(g_interpreter, nullptr);
   ASSERT_EQ(reporter.num_calls(), 1);
   ASSERT_PRED_FORMAT2(testing::IsSubstring,
                       "num_threads should be >= 0 or just -1",
@@ -306,30 +306,30 @@ TEST(BasicFlatBufferModel, TestSetNumThreads) {
   auto model = FlatBufferModel::BuildFromFile(
       "tensorflow/lite/testdata/test_model.bin", &reporter);
   ASSERT_TRUE(model);
-  std::unique_ptr<Interpreter> interpreter;
+  std::unique_ptr<Interpreter> g_interpreter;
   TrivialResolver resolver(&dummy_reg);
   InterpreterBuilder builder(*model, resolver);
 
   ASSERT_EQ(builder.SetNumThreads(42), kTfLiteOk);
-  interpreter.reset();
-  ASSERT_EQ(builder(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  g_interpreter.reset();
+  ASSERT_EQ(builder(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
 
   ASSERT_EQ(builder.SetNumThreads(0), kTfLiteOk);
-  interpreter.reset();
-  ASSERT_EQ(builder(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  g_interpreter.reset();
+  ASSERT_EQ(builder(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
 
   ASSERT_EQ(builder.SetNumThreads(-1), kTfLiteOk);
-  interpreter.reset();
-  ASSERT_EQ(builder(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  g_interpreter.reset();
+  ASSERT_EQ(builder(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
 
   ASSERT_EQ(reporter.num_calls(), 0);
   ASSERT_EQ(builder.SetNumThreads(-2), kTfLiteError);
-  interpreter.reset();
-  ASSERT_EQ(builder(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  g_interpreter.reset();
+  ASSERT_EQ(builder(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
   ASSERT_EQ(reporter.num_calls(), 1);
   ASSERT_PRED_FORMAT2(testing::IsSubstring,
                       "num_threads should be >= 0 or just -1",
@@ -341,18 +341,18 @@ TEST(BasicFlatBufferModel, TestSetNumThreadsWithMultipleSubgraphs) {
   auto model = FlatBufferModel::BuildFromFile(
       "tensorflow/lite/testdata/2_subgraphs.bin", &reporter);
   ASSERT_TRUE(model);
-  std::unique_ptr<Interpreter> interpreter;
+  std::unique_ptr<Interpreter> g_interpreter;
   TrivialResolver resolver(&dummy_reg);
   InterpreterBuilder builder(*model, resolver);
 
   ASSERT_EQ(builder.SetNumThreads(4), kTfLiteOk);
-  interpreter.reset();
-  ASSERT_EQ(builder(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  g_interpreter.reset();
+  ASSERT_EQ(builder(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
 
   // Check that each subgraph has the expected number of threads set.
-  for (int i = 0; i < interpreter->subgraphs_size(); ++i) {
-    EXPECT_EQ(interpreter->subgraph(i)->context()->recommended_num_threads, 4);
+  for (int i = 0; i < g_interpreter->subgraphs_size(); ++i) {
+    EXPECT_EQ(g_interpreter->subgraph(i)->context()->recommended_num_threads, 4);
   }
 }
 
@@ -366,15 +366,15 @@ TEST(FlexModel, FailureWithoutFlexDelegate) {
   // Note that creation will succeed when using the BuiltinOpResolver, but
   // unless the appropriate delegate is linked into the target or the client
   // explicitly installs the delegate, execution will fail.
-  std::unique_ptr<Interpreter> interpreter;
+  std::unique_ptr<Interpreter> g_interpreter;
   ASSERT_EQ(InterpreterBuilder(*model,
-                               ops::builtin::BuiltinOpResolver{})(&interpreter),
+                               ops::builtin::BuiltinOpResolver{})(&g_interpreter),
             kTfLiteOk);
-  ASSERT_TRUE(interpreter);
+  ASSERT_TRUE(g_interpreter);
 
   // As the flex ops weren't resolved implicitly by the flex delegate, runtime
   // allocation and execution will fail.
-  ASSERT_EQ(interpreter->AllocateTensors(), kTfLiteUnresolvedOps);
+  ASSERT_EQ(g_interpreter->AllocateTensors(), kTfLiteUnresolvedOps);
 }
 
 // This tests on a flatbuffer that defines a shape of 2 to be a memory mapped
@@ -386,11 +386,11 @@ TEST(BasicFlatBufferModel, TestBrokenMmap) {
 
 TEST(BasicFlatBufferModel, TestNullModel) {
   // Check that we get an error code and interpreter pointer is reset.
-  std::unique_ptr<Interpreter> interpreter(new Interpreter);
+  std::unique_ptr<Interpreter> g_interpreter(new Interpreter);
   ASSERT_NE(
-      InterpreterBuilder(nullptr, TrivialResolver(&dummy_reg))(&interpreter),
+      InterpreterBuilder(nullptr, TrivialResolver(&dummy_reg))(&g_interpreter),
       kTfLiteOk);
-  ASSERT_EQ(interpreter.get(), nullptr);
+  ASSERT_EQ(g_interpreter.get(), nullptr);
 }
 
 // Mocks the verifier by setting the result in ctor.
@@ -431,10 +431,10 @@ TEST(BasicFlatBufferModel, TestCustomErrorReporter) {
       "tensorflow/lite/testdata/empty_model.bin", &reporter);
   ASSERT_TRUE(model);
 
-  std::unique_ptr<Interpreter> interpreter;
+  std::unique_ptr<Interpreter> g_interpreter;
   TrivialResolver resolver;
-  InterpreterBuilder(*model, resolver)(&interpreter);
-  ASSERT_NE(interpreter->Invoke(), kTfLiteOk);
+  InterpreterBuilder(*model, resolver)(&g_interpreter);
+  ASSERT_NE(g_interpreter->Invoke(), kTfLiteOk);
   ASSERT_EQ(reporter.num_calls(), 1);
 }
 
@@ -445,10 +445,10 @@ TEST(BasicFlatBufferModel, TestNullErrorReporter) {
       "tensorflow/lite/testdata/empty_model.bin", nullptr);
   ASSERT_TRUE(model);
 
-  std::unique_ptr<Interpreter> interpreter;
+  std::unique_ptr<Interpreter> g_interpreter;
   TrivialResolver resolver;
-  InterpreterBuilder(*model, resolver)(&interpreter);
-  ASSERT_NE(interpreter->Invoke(), kTfLiteOk);
+  InterpreterBuilder(*model, resolver)(&g_interpreter);
+  ASSERT_NE(g_interpreter->Invoke(), kTfLiteOk);
 }
 
 // Test that loading model directly from a Model flatbuffer works.
@@ -466,11 +466,11 @@ TEST(BasicFlatBufferModel, TestBuildFromModel) {
   auto model = FlatBufferModel::BuildFromModel(model_fb);
   ASSERT_TRUE(model);
 
-  std::unique_ptr<Interpreter> interpreter;
+  std::unique_ptr<Interpreter> g_interpreter;
   ASSERT_EQ(
-      InterpreterBuilder(*model, TrivialResolver(&dummy_reg))(&interpreter),
+      InterpreterBuilder(*model, TrivialResolver(&dummy_reg))(&g_interpreter),
       kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  ASSERT_NE(g_interpreter, nullptr);
 }
 
 // Test that loading model directly from an Allocation works.
@@ -484,11 +484,11 @@ TEST(BasicFlatBufferModel, TestBuildFromAllocation) {
       FlatBufferModel::BuildFromAllocation(std::move(model_allocation));
   ASSERT_TRUE(model);
 
-  std::unique_ptr<Interpreter> interpreter;
+  std::unique_ptr<Interpreter> g_interpreter;
   ASSERT_EQ(
-      InterpreterBuilder(*model, TrivialResolver(&dummy_reg))(&interpreter),
+      InterpreterBuilder(*model, TrivialResolver(&dummy_reg))(&g_interpreter),
       kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  ASSERT_NE(g_interpreter, nullptr);
 }
 
 TEST(BasicFlatBufferModel, TestBuildFromNullAllocation) {
@@ -550,16 +550,16 @@ TEST(BasicFlatBufferModel, TestReadMetadataFromContext) {
   auto model1 = FlatBufferModel::BuildFromFile(
       "tensorflow/lite/testdata/test_model.bin");
   ASSERT_TRUE(model1);
-  std::unique_ptr<Interpreter> interpreter;
+  std::unique_ptr<Interpreter> g_interpreter;
   TrivialResolver resolver(&dummy_reg);
   InterpreterBuilder builder1(*model1, resolver);
-  interpreter.reset();
-  ASSERT_EQ(builder1(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  g_interpreter.reset();
+  ASSERT_EQ(builder1(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
 
   const char* ptr = nullptr;
   size_t bytes;
-  auto* context = interpreter->subgraph(0)->context();
+  auto* context = g_interpreter->subgraph(0)->context();
   ASSERT_EQ(context->GetModelMetadata(
                 context, reduced_precision_meta_key.c_str(), &ptr, &bytes),
             kTfLiteError);
@@ -569,11 +569,11 @@ TEST(BasicFlatBufferModel, TestReadMetadataFromContext) {
       "tensorflow/lite/testdata/test_model_redux_precision.bin");
   ASSERT_TRUE(model2);
   InterpreterBuilder builder2(*model2, resolver);
-  interpreter.reset();
-  ASSERT_EQ(builder2(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
+  g_interpreter.reset();
+  ASSERT_EQ(builder2(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
 
-  context = interpreter->subgraph(0)->context();
+  context = g_interpreter->subgraph(0)->context();
   ASSERT_EQ(context->GetModelMetadata(
                 context, reduced_precision_meta_key.c_str(), &ptr, &bytes),
             kTfLiteOk);
@@ -595,12 +595,12 @@ TEST(BasicFlatBufferModel, TestParseModelWithSparseTensor) {
       "tensorflow/lite/testdata/sparse_tensor.bin");
   ASSERT_TRUE(model);
 
-  std::unique_ptr<Interpreter> interpreter(new Interpreter);
-  ASSERT_EQ(InterpreterBuilder(*model, TrivialResolver())(&interpreter),
+  std::unique_ptr<Interpreter> g_interpreter(new Interpreter);
+  ASSERT_EQ(InterpreterBuilder(*model, TrivialResolver())(&g_interpreter),
             kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(interpreter->tensors_size(), 2);
-  TfLiteTensor* t1 = interpreter->tensor(0);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(g_interpreter->tensors_size(), 2);
+  TfLiteTensor* t1 = g_interpreter->tensor(0);
   ASSERT_EQ(t1->allocation_type, kTfLiteMmapRo);
 
   TfLiteIntArray* traversal_order = TfLiteIntArrayCreate(4);
@@ -671,10 +671,10 @@ TEST(BasicFlatBufferModel, TestHandleMalformedModelReuseTensor) {
 
   tflite::ops::builtin::BuiltinOpResolver resolver;
   InterpreterBuilder builder(*model, resolver);
-  std::unique_ptr<Interpreter> interpreter;
-  ASSERT_EQ(builder(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_NE(interpreter->AllocateTensors(), kTfLiteOk);
+  std::unique_ptr<Interpreter> g_interpreter;
+  ASSERT_EQ(builder(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_NE(g_interpreter->AllocateTensors(), kTfLiteOk);
 }
 
 // The models here have a buffer index for a tensor pointing to a null buffer.
@@ -692,11 +692,11 @@ TEST(BasicFlatBufferModel, TestHandleMalformedModelInvalidBuffer) {
 
   tflite::ops::builtin::BuiltinOpResolver resolver;
   InterpreterBuilder builder(*model, resolver);
-  std::unique_ptr<Interpreter> interpreter;
-  ASSERT_EQ(builder(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(interpreter->AllocateTensors(), kTfLiteOk);
-  ASSERT_NE(interpreter->Invoke(), kTfLiteOk);
+  std::unique_ptr<Interpreter> g_interpreter;
+  ASSERT_EQ(builder(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(g_interpreter->AllocateTensors(), kTfLiteOk);
+  ASSERT_NE(g_interpreter->Invoke(), kTfLiteOk);
 }
 
 TEST(TestAddDelegateOwnership, AddDelegateDoesNotTakeOwnership) {
@@ -731,7 +731,7 @@ TEST(TestAddDelegateOwnership, AddDelegateDoesNotTakeOwnership) {
           "tensorflow/lite/testdata/empty_model.bin");
       ASSERT_TRUE(model);
       // Now try to build it into an interpreter.
-      std::unique_ptr<Interpreter> interpreter;
+      std::unique_ptr<Interpreter> g_interpreter;
 
       TrivialResolver resolver;
       InterpreterBuilder builder(*model, resolver);
@@ -739,16 +739,16 @@ TEST(TestAddDelegateOwnership, AddDelegateDoesNotTakeOwnership) {
       // Loop to check we can construct multiple interpreters from one builder.
       for (int i = 0; i < 3; i++) {
         prepared = false;
-        ASSERT_EQ(builder(&interpreter), kTfLiteOk);
-        ASSERT_NE(interpreter, nullptr);
+        ASSERT_EQ(builder(&g_interpreter), kTfLiteOk);
+        ASSERT_NE(g_interpreter, nullptr);
 
         // The delegate should be prepared as normal, and should be preserved.
         EXPECT_TRUE(prepared);
         EXPECT_FALSE(destroyed);
 
         // Interpreter interaction should not impact the delegate's validity.
-        interpreter->AllocateTensors();
-        interpreter->Invoke();
+        g_interpreter->AllocateTensors();
+        g_interpreter->Invoke();
         EXPECT_FALSE(destroyed);
       }
     }
@@ -774,20 +774,20 @@ TEST(BasicFlatBufferModel, TestHandleModelWithWhileOpContainsForwardingInput) {
 
   tflite::ops::builtin::BuiltinOpResolver resolver;
   InterpreterBuilder builder(*model, resolver);
-  std::unique_ptr<Interpreter> interpreter;
-  ASSERT_EQ(builder(&interpreter), kTfLiteOk);
-  ASSERT_NE(interpreter, nullptr);
-  ASSERT_EQ(interpreter->AllocateTensors(), kTfLiteOk);
+  std::unique_ptr<Interpreter> g_interpreter;
+  ASSERT_EQ(builder(&g_interpreter), kTfLiteOk);
+  ASSERT_NE(g_interpreter, nullptr);
+  ASSERT_EQ(g_interpreter->AllocateTensors(), kTfLiteOk);
 
-  int32_t* tensor_data = interpreter->typed_tensor<int32_t>(0);
+  int32_t* tensor_data = g_interpreter->typed_tensor<int32_t>(0);
   tensor_data[0] = 20;
 
-  auto tensor = interpreter->tensor(1);
+  auto tensor = g_interpreter->tensor(1);
   DynamicBuffer buf;
   buf.AddString("a", 1);
   buf.WriteToTensor(tensor, /*new_shape=*/nullptr);
 
-  ASSERT_EQ(interpreter->Invoke(), kTfLiteOk);
+  ASSERT_EQ(g_interpreter->Invoke(), kTfLiteOk);
 }
 
 TEST(BasicFlatBufferModel, TestHandleZeroSizeConstant) {
@@ -804,15 +804,15 @@ TEST(BasicFlatBufferModel, TestHandleZeroSizeConstant) {
   auto model = FlatBufferModel::BuildFromModel(model_fb);
   EXPECT_TRUE(model);
 
-  std::unique_ptr<Interpreter> interpreter;
+  std::unique_ptr<Interpreter> g_interpreter;
   EXPECT_EQ(
-      InterpreterBuilder(*model, TrivialResolver(&dummy_reg))(&interpreter),
+      InterpreterBuilder(*model, TrivialResolver(&dummy_reg))(&g_interpreter),
       kTfLiteOk);
-  EXPECT_NE(interpreter, nullptr);
+  EXPECT_NE(g_interpreter, nullptr);
 
-  EXPECT_EQ(interpreter->tensors_size(), 3);
+  EXPECT_EQ(g_interpreter->tensors_size(), 3);
   // Second tensor should be treated as constant.
-  ASSERT_EQ(interpreter->tensor(1)->allocation_type, kTfLiteMmapRo);
+  ASSERT_EQ(g_interpreter->tensor(1)->allocation_type, kTfLiteMmapRo);
 }
 
 // TODO(aselle): Add tests for serialization of builtin op data types.

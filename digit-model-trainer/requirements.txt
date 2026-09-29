@@ -1,0 +1,7 @@
+wheel
+numpy
+opencv-python
+tensorflow
+intel-extension-for-tensorflow
+pyautogui
+Pillow
