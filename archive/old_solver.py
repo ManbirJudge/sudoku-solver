@@ -1,3 +1,5 @@
+import csv
+import time
 from typing import List
 
 CELL_MAP = [
@@ -223,33 +225,38 @@ def solve(p: list) -> bool:
 
 # ---
 # if __name__ == '__main__':
-#     N_PAPERS = 1_000_000
+#     N_PAPERS = 250_000
 #     papers: List[List[int]] = []
 #     soln_not_found: List[int] = []
-#
+
 #     # reading
-#     with open('games.csv', newline='') as f:
+#     print('Loading...')
+
+#     with open('db/games.csv', newline='') as f:
 #         reader = csv.reader(f)
 #         next(reader)
-#
+
 #         for i, row in enumerate(reader):
 #             if i >= N_PAPERS:
 #                 break
-#             papers.append([int(c) for c in str(row[0])])
-#
+#             papers.append([int(c) if c != '.' else 0 for c in str(row[1])])
+
 #     # ---
-#     print('Starting.')
+#     print('Starting...')
+
 #     start = time.perf_counter()
-#
+
 #     for i in range(N_PAPERS):
+#         if (i % 1000 == 0): print(f'\r{i}', end='', flush=True)
 #         if not solve(papers[i]):
 #             soln_not_found.append(i)
-#
+#     print('')
+
 #     # metrics and result
 #     end = time.perf_counter()
 #     duration = end - start
 #     rate = N_PAPERS / duration
-#
+
 #     print('Done.\n---------------')
 #     print(f'Time taken: {duration:.4} s')
 #     print(f'Processed: {N_PAPERS}')
@@ -262,17 +269,17 @@ if __name__ == '__main__':
     import time
 
     paper = [
-        0,0,7, 0,0,0, 0,0,8,
-        0,9,3, 4,0,0, 0,0,0,
-        0,0,0, 0,0,2, 0,4,0,
+        0,0,3, 0,2,0, 0,0,6,
+        9,0,0, 3,0,5, 0,0,0,
+        0,0,0, 0,0,0, 8,0,0,
 
-        0,0,0, 0,0,8, 2,7,1,
-        0,7,0, 0,0,0, 0,9,0,
-        1,3,6, 2,0,0, 0,0,0,
+        0,0,0, 0,1,0, 0,9,0,
+        0,5,0, 0,0,0, 0,0,1,
+        0,0,1, 0,0,0, 6,0,0,
 
-        0,2,0, 5,0,0, 0,0,0,
-        0,0,0, 0,0,7, 4,5,0,
-        3,0,0, 0,0,0, 8,0,0,
+        0,0,8, 0,0,0, 0,0,0,
+        0,0,0, 6,0,0, 0,1,9,
+        2,0,0, 0,9,0, 5,0,0
     ]
 
     print('Starting.')

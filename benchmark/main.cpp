@@ -4,9 +4,12 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iostream>
+
+#include "solver.hpp"
 
 int main(void) {
-    size_t N_PAPERS = 100000;
+    size_t N_PAPERS = 80000;
 
     std::vector<Paper> papers;
     std::vector<Paper> solutions;
