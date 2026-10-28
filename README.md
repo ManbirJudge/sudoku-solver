@@ -1,5 +1,5 @@
 # Sudoku Solver
-## Structures
+## Structure
 - `archive` - Contains some older files; now replaced or not needed.
 - `benchmark` - Benchmarks for our solver. Includes `solver` as sub-project.
 - `digit-model-trainer` - As the name says, digit model training script (Python + TensorFlow).
@@ -15,11 +15,13 @@
   - Saving.
 - Ads. -->
 ## Changelog
-### Sepetember 2026
-- A lot of things - look at the commits.
+### September 2026
+- Added guessing; can solve every valid Sudoku now (which it couldn't before).
+- Updated the Android project (a lot; read `SudokuSolver/README.md`).
+- A lot of other small/big things.
 ### 16-01-2026
-- Merged both seperate projects into one repository.
-- Initalized Git and GitHub repositories.
+- Merged both separate projects into one repository.
+- Initialized Git and GitHub repositories.
 ### Some days after that
 - Android app + computer-vision based recognition + solving
 ### 12-08-2025 02:00 
